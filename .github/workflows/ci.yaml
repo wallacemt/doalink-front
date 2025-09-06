@@ -25,10 +25,10 @@ jobs:
         run: flutter analyze
 
       - name: Run tests
-        run: flutter test --coverge
+        run: flutter test --coverage
 
       - name: Check for outdated packages
-        run: dart pub outdated --mode=null-safety
+        run: dart pub outdated
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
