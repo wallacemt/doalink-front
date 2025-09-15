@@ -1,4 +1,5 @@
 import 'package:doalink/theme/app_colors.dart';
+import 'package:doalink/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,12 +12,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DoaLink',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.orange_500),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: SplashScreen(
+        child: const MyHomePage(title: 'DoaLink'),
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
