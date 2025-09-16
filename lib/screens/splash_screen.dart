@@ -1,3 +1,4 @@
+import 'package:doalink/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 2200),
       vsync: this,
     );
 
@@ -53,17 +54,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startSplashSequence() async {
-    // Aguarda um pouco antes de iniciar as animações
-    await Future.delayed(const Duration(milliseconds: 500));
 
-    // Inicia as animações em paralelo
+    await Future.delayed(const Duration(milliseconds: 500));
     _fadeController.forward();
     _scaleController.forward();
 
-    // Aguarda o tempo total da splash screen
     await Future.delayed(const Duration(milliseconds: 3000));
 
-    // Navega para a próxima tela
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => widget.child),
@@ -83,15 +80,12 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E88E5), // Azul
-              Color(0xFF1565C0), // Azul mais escuro
-            ],
-          ),
-        ),
+            gradient: LinearGradient(
+          colors: [Color(0xff36d1dc), Color(0xff5b86e5)],
+          stops: [0, 1],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        )),
         child: Center(
           child: AnimatedBuilder(
             animation: Listenable.merge([_fadeAnimation, _scaleAnimation]),
@@ -104,27 +98,25 @@ class _SplashScreenState extends State<SplashScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Logo com texto
-                      Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
+                      SizedBox(
+                        width: 400,
+                        height: 400,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: Image.asset(
-                            'images/logo_with_text.png',
-                            fit: BoxFit.contain,
+                            'assets/images/logo_with_text.png',
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
+                      const Text("Conectando quem doa com quem precisa",
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontFamily: "Funnel Sans",
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            letterSpacing: 1.2,
+                          )),
                       const SizedBox(height: 40),
                       // Indicador de carregamento
                       const SizedBox(
@@ -138,15 +130,6 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: 20),
                       // Texto de carregamento
-                      const Text(
-                        'Carregando...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
                     ],
                   ),
                 ),

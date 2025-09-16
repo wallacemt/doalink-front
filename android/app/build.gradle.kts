@@ -1,8 +1,36 @@
+import java.io.File
+import java.util.Properties
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+fun loadDotEnv(projectDir: File): Properties {
+    val envFile = File(projectDir.parentFile, ".env") 
+    val properties = Properties()
+
+    if (envFile.exists()) {
+        envFile.forEachLine { line ->
+            if (line.isNotBlank() && !line.trimStart().startsWith("#")) {
+                val parts = line.split("=", limit = 2)
+                if (parts.size == 2) {
+                    val key = parts[0].trim()
+                    val value = parts[1].trim()
+                    properties[key] = value.removePrefix("\"").removeSuffix("\"").removePrefix("'").removeSuffix("'")
+                }
+            }
+        }
+    } else {
+        logger.lifecycle("WARNING: .env file not found at ${envFile.absolutePath}. Environment variables will not be loaded from it.")
+    }
+    return properties
+}
+
+val dotEnvProperties = loadDotEnv(project.rootDir) 
+fun getDotEnvProperty(key: String): String {
+    return dotEnvProperties.getProperty(key) ?: error("Property '$key' not found in .env file or system environment.")
 }
 
 android {
@@ -28,6 +56,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        manifestPlaceholders["googleMapsApiKey"] = getDotEnvProperty("GOOGLE_MAPS_API_KEY")
     }
 
     buildTypes {

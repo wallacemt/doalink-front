@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 20),
 
                   // Logo
                   Container(
@@ -81,19 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.asset(
-                        'images/logo.png',
-                        fit: BoxFit.contain,
+                        'assets/images/logo.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
