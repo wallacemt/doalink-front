@@ -13,6 +13,7 @@ dependencies:
   google_maps_flutter: ^2.13.1
   flutter_svg: ^2.0.10+1
   flutter_dotenv: ^5.1.0
+  animate_do: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -22,11 +23,25 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  #   Títulos principais: Playfair Display Bold
+
+  # Subtítulos: Raleway Medium
+
+  # Corpo de texto e UI geral: Funnel Sans Regular / Bold
   fonts:
-    - family: Funnel Sans Bold
+    - family: Primary
+      fonts:
+        - asset: assets\fonts\PlayfairDisplay-Bold.ttf
+
+    - family: Subtitles
+      fonts:
+        - asset: assets\fonts\Raleway-Medium.ttf
+
+    - family: TextsBody Bold
       fonts:
         - asset: assets\fonts\FunnelSans-Bold.ttf
-    - family: Funnel Sans 
+    - family: TextsBody
       fonts:
         - asset: assets\fonts\FunnelSans-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf

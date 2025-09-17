@@ -1,4 +1,4 @@
-import 'package:doalink/widgets/menu_widget.dart';
+import 'package:doalink/components/menu_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:doalink/theme/app_colors.dart';

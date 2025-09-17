@@ -1,7 +1,9 @@
-import 'package:doalink/screens/map_screen.dart';
+import 'package:doalink/screens/auth/login_screen.dart';
+import 'package:doalink/screens/auth/register_with_email.dart';
+import 'package:doalink/screens/auth/auth_home_screen.dart';
+import 'package:doalink/screens/app/home_screen.dart';
 import 'package:doalink/theme/app_colors.dart';
 import 'package:doalink/screens/splash_screen.dart';
-import 'package:doalink/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -22,10 +24,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.orange_500),
         useMaterial3: true,
       ),
-      home: SplashScreen(child: const LoginScreen()),
+      home: SplashScreen(child: HomePage()),
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/map': (context) => const MapScreen(),
+        '/register': (context) => const RegisterWithEmail(),
+        '/home': (context) => const MapScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
