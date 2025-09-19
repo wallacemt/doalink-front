@@ -16,12 +16,12 @@ class AuthOptionsSelect extends StatelessWidget {
               children: [
                 AuthOptionsSelectCard(
                   title: 'Entrar com Google',
-                  iconForSrc: "assets/images/icon-google.jpg",
+                  iconForSrc: "assets/images/icon-google.png",
                   routeName: '/login/google',
                 ),
                 AuthOptionsSelectCard(
                   title: 'Entrar com IOS',
-                  iconForSrc: "assets/images/icon-ios.jpg",
+                  iconForSrc: "assets/images/icon-ios.png",
                   routeName: '/login/ios',
                 ),
                 AuthOptionsSelectCard(

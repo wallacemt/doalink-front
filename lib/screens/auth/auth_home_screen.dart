@@ -4,8 +4,8 @@ import 'package:doalink/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePageAuth extends StatelessWidget {
+  const HomePageAuth({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

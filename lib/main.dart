@@ -6,11 +6,16 @@ import 'package:doalink/theme/app_colors.dart';
 import 'package:doalink/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -24,11 +29,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.orange_500),
         useMaterial3: true,
       ),
-      home: SplashScreen(child: HomePage()),
+      home: SplashScreen(child: HomePageAuth()),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterWithEmail(),
-        '/home': (context) => const MapScreen(),
+        '/home': (context) => const HomeScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
