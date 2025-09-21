@@ -1,3 +1,5 @@
+import 'package:doalink/screens/app/add_donation_box_screen.dart';
+import 'package:doalink/screens/app/select_category_screen.dart';
 import 'package:doalink/screens/auth/login_screen.dart';
 import 'package:doalink/screens/auth/register_with_email.dart';
 import 'package:doalink/screens/auth/auth_home_screen.dart';
@@ -29,6 +31,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterWithEmail(),
         '/home': (context) => const MapScreen(),
+        '/donationBox': (context) => const AddDonationBoxScreen(),
+        '/selectCategory': (context) => const SelectCategoryScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

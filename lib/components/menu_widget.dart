@@ -1,3 +1,4 @@
+import 'package:doalink/screens/app/add_donation_box_screen.dart';
 import 'package:doalink/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
@@ -54,17 +55,11 @@ class MenuWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.favorite),
-            title: const Text('Minhas Doações'),
-            onTap: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Funcionalidade em desenvolvimento'),
-                ),
-              );
-            },
-          ),
+              leading: const Icon(Icons.favorite),
+              title: const Text('Minhas Doações'),
+              onTap: () {
+                Navigator.pushNamed(context, '/donationBox');
+              }),
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Histórico'),

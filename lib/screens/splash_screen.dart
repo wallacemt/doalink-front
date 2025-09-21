@@ -54,7 +54,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startSplashSequence() async {
-
     await Future.delayed(const Duration(milliseconds: 500));
     _fadeController.forward();
     _scaleController.forward();
