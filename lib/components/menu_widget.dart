@@ -1,4 +1,3 @@
-import 'package:doalink/screens/app/add_donation_box_screen.dart';
 import 'package:doalink/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
