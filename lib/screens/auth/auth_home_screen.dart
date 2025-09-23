@@ -1,6 +1,7 @@
 import 'package:doalink/screens/auth/login_screen.dart';
 import 'package:doalink/screens/auth/register_with_email.dart';
 import 'package:doalink/theme/app_colors.dart';
+import 'package:doalink/widgets/onboarding_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -9,117 +10,129 @@ class HomePageAuth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1000),
-                      child: const Text(
-                        "Bem Vindo(a) ao DoaLink",
-                        style: TextStyle(
-                            fontFamily: "Principal",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30),
-                      )),
-                  const SizedBox(
-                    height: 20,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+        child: ListView(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                FadeInUp(
+                  duration: const Duration(milliseconds: 1000),
+                  child: const Text(
+                    "Bem-vindo ao DoaLink",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      height: 1.2,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1200),
-                      child: Text(
-                        "Conectando quem quer doar com quem precisa",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.grey[700],
-                            fontFamily: "Subtitles",
-                            fontSize: 15),
-                      )),
-                ],
-              ),
-              FadeInUp(
-                  duration: const Duration(milliseconds: 1400),
+                ),
+                const SizedBox(height: 16),
+                FadeInUp(
+                  duration: const Duration(milliseconds: 1200),
                   child: Container(
-                    height: MediaQuery.of(context).size.height / 3,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage('assets/images/logo_with_text.png'),
-                      fit: BoxFit.cover,
-                    )),
-                  )),
-              Column(
-                children: <Widget>[
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1500),
-                      child: MaterialButton(
-                        minWidth: double.infinity,
-                        height: 60,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()));
-                        },
-                        shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: AppColors.blue_600),
-                            borderRadius: BorderRadius.circular(50)),
-                        child: const Text(
-                          "Entrar",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontFamily: "TextsBody",
-                              fontSize: 18),
-                        ),
-                      )),
-                  const SizedBox(
-                    height: 20,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      "Conectando quem quer doar com quem precisa de forma simples e segura",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        height: 1.5,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
                   ),
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1600),
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 3, left: 3),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            border: const Border(
-                              bottom: BorderSide(color: Colors.black),
-                              top: BorderSide(color: Colors.black),
-                              left: BorderSide(color: Colors.black),
-                              right: BorderSide(color: Colors.black),
-                            )),
-                        child: MaterialButton(
-                          minWidth: double.infinity,
-                          height: 60,
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegisterWithEmail()));
-                          },
-                          color: Colors.yellow,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50)),
-                          child: const Text(
-                            "Cadastrar-se",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                                fontFamily: "TextsBody"),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            OnboardingCarousel(
+              slides: DoaLinkSlides.slides,
+              autoPlay: true,
+              autoPlayInterval: const Duration(seconds: 5),
+              showIndicators: true,
+            ),
+            Column(
+              children: <Widget>[
+                FadeInUp(
+                  duration: const Duration(milliseconds: 1500),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
                           ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue_600,
+                        foregroundColor: Colors.white,
+                        elevation: 2,
+                        shadowColor: AppColors.blue_600.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ))
-                ],
-              )
-            ],
-          ),
+                      ),
+                      child: const Text(
+                        "Entrar",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FadeInUp(
+                  duration: const Duration(milliseconds: 1600),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterWithEmail(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.orange_500,
+                        side: const BorderSide(
+                          color: AppColors.orange_500,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        "Cadastrar-se",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

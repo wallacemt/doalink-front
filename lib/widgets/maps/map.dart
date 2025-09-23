@@ -161,9 +161,6 @@ class _MapState extends State<MapScreen> {
           child: FloatingActionButton(
             onPressed: () async {
               Position? pos = await _goToMyLocation();
-              if (pos == null) {
-                return;
-              }
               return _mapController?.animateCamera(
                 CameraUpdate.newCameraPosition(CameraPosition(
                     target: LatLng(pos.latitude, pos.longitude), zoom: 15)),

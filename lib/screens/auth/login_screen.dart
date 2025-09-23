@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:doalink/components/auth_options_select.dart';
+import 'package:doalink/widgets/auth_options_select.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -47,15 +47,8 @@ class LoginScreen extends StatelessWidget {
                                 fontSize: 30, fontWeight: FontWeight.bold),
                           )),
                       const SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
-                      FadeInUp(
-                          duration: const Duration(milliseconds: 1200),
-                          child: Text(
-                            "Entrar com uma das opções abaixo ou com email",
-                            style: TextStyle(
-                                fontSize: 15, color: Colors.grey[700]),
-                          )),
                     ],
                   ),
                   method == null ? const AuthOptionsSelect() : Container(),
@@ -79,9 +72,9 @@ class LoginScreen extends StatelessWidget {
                       ? FadeInUp(
                           duration: const Duration(milliseconds: 1400),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Container(
-                              padding: const EdgeInsets.only(top: 3, left: 3),
+                              padding: const EdgeInsets.only(top: 2, left: 2),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
                                   border: const Border(
@@ -92,8 +85,10 @@ class LoginScreen extends StatelessWidget {
                                   )),
                               child: MaterialButton(
                                 minWidth: double.infinity,
-                                height: 60,
-                                onPressed: () {},
+                                height: 50,
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed("/home");
+                                },
                                 color: Colors.greenAccent,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
@@ -108,12 +103,6 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ))
                       : Container(),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/home");
-                    },
-                    child: Text("Skip login for now"),
-                  ),
                   FadeInUp(
                       duration: const Duration(milliseconds: 1500),
                       child: Row(
@@ -155,7 +144,7 @@ class LoginScreen extends StatelessWidget {
                   decoration: const BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage('assets/images/background.png'),
-                          fit: BoxFit.cover)),
+                          fit: BoxFit.contain)),
                 ))
           ],
         ),
@@ -187,7 +176,7 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: 30,
+          height: 15,
         ),
       ],
     );

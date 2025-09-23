@@ -1,5 +1,5 @@
-import 'package:doalink/components/maps/map.dart';
-import 'package:doalink/components/menu_widget.dart';
+import 'package:doalink/widgets/maps/map.dart';
+import 'package:doalink/widgets/menu_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {

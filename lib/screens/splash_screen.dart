@@ -67,8 +67,8 @@ class _SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: 400,
-              height: 400,
+              width: 300,
+              height: 300,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
@@ -81,8 +81,8 @@ class _SplashScreenState extends State<SplashScreen>
                 style: TextStyle(
                   color: AppColors.black,
                   fontFamily: "Funnel Sans",
-                  fontSize: 18,
-                  fontWeight: FontWeight.w300,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 1.2,
                 )),
             const SizedBox(height: 40),

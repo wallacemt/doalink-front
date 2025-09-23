@@ -25,7 +25,7 @@ class RegisterWithEmail extends StatelessWidget {
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 40),
-          height: MediaQuery.of(context).size.height - 50,
+          height: MediaQuery.of(context).size.height - 10,
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -70,7 +70,7 @@ class RegisterWithEmail extends StatelessWidget {
               FadeInUp(
                   duration: const Duration(milliseconds: 1500),
                   child: Container(
-                    padding: const EdgeInsets.only(top: 3, left: 3),
+                    padding: const EdgeInsets.only(top: 2, left: 2),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         border: const Border(
@@ -81,7 +81,7 @@ class RegisterWithEmail extends StatelessWidget {
                         )),
                     child: MaterialButton(
                       minWidth: double.infinity,
-                      height: 60,
+                      height: 50,
                       onPressed: () {},
                       color: Colors.greenAccent,
                       elevation: 0,
@@ -117,11 +117,12 @@ class RegisterWithEmail extends StatelessWidget {
                             "Entrar",
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                                fontSize: 14,
                                 color: Colors.black),
                           ))
                     ],
                   )),
+              
             ],
           ),
         ),

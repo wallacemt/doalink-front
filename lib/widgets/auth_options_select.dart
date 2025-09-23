@@ -9,22 +9,28 @@ class AuthOptionsSelect extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInUp(
-        duration: Duration(milliseconds: 1000),
-        child: Container(
+        duration: const Duration(milliseconds: 1000),
+        child: SizedBox(
             width: 300,
-            child: const Column(
+            child: Column(
               children: [
-                AuthOptionsSelectCard(
+                FadeInUp(
+                    duration: const Duration(milliseconds: 1200),
+                    child: Text(
+                      "Entrar com uma das opções abaixo ou com email",
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    )),
+                const AuthOptionsSelectCard(
                   title: 'Entrar com Google',
                   iconForSrc: "assets/images/icon-google.png",
                   routeName: '/login/google',
                 ),
-                AuthOptionsSelectCard(
+                const AuthOptionsSelectCard(
                   title: 'Entrar com IOS',
                   iconForSrc: "assets/images/icon-ios.png",
                   routeName: '/login/ios',
                 ),
-                AuthOptionsSelectCard(
+                const AuthOptionsSelectCard(
                   title: 'Entrar com Email',
                   icon: Icons.email,
                   routeName: '/login',
@@ -58,7 +64,7 @@ class AuthOptionsSelectCard extends StatelessWidget {
         },
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: Colors.white, width: 2),
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
