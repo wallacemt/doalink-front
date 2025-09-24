@@ -1,6 +1,5 @@
 import 'package:doalink/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:animate_do/animate_do.dart';
 
 class AuthOptionsSelect extends StatelessWidget {

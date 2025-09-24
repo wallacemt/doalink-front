@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTY	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Este aplicativo utiliza sua localização para mostrar sua posição no mapa e encontrar pontos de interesse</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>Purpose1</key>
+		<string>Este aplicativo utiliza sua localização para mostrar sua posição no mapa e encontrar pontos de interesse</string>
+	</dict>
+	<!-- Chave da API do Google Maps -->
+	<key>GMSApiKey</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>t PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -45,5 +54,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Este aplicativo utiliza sua localização para mostrar sua posição no mapa e encontrar pontos de interesse
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>Purpose1</key>
+		<string>Este aplicativo utiliza sua localização para mostrar sua posição no mapa e encontrar pontos de interesse</string>
+	</dict>
 </dict>
 </plist>

@@ -1,7 +1,7 @@
 import 'package:doalink/screens/auth/login_screen.dart';
 import 'package:doalink/screens/auth/register_with_email.dart';
 import 'package:doalink/screens/auth/auth_home_screen.dart';
-import 'package:doalink/screens/app/home_screen.dart';
+import 'package:doalink/screens/app/wrap_home_screen.dart';
 import 'package:doalink/theme/app_colors.dart';
 import 'package:doalink/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +29,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.orange_500),
         useMaterial3: true,
       ),
-      home: SplashScreen(child: HomePageAuth()),
+      home: const SplashScreen(child: HomePageAuth()),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterWithEmail(),
-        '/home': (context) => const HomeScreen(),
+        '/home': (context) => const WrapHomeScreen(route: '/home'),
+        '/map': (context) => const WrapHomeScreen(route: '/map'),
+        '/profile': (context) => const WrapHomeScreen(route: '/profile'),
       },
       debugShowCheckedModeBanner: false,
     );

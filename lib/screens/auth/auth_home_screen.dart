@@ -1,7 +1,7 @@
 import 'package:doalink/screens/auth/login_screen.dart';
 import 'package:doalink/screens/auth/register_with_email.dart';
 import 'package:doalink/theme/app_colors.dart';
-import 'package:doalink/widgets/onboarding_carousel.dart';
+import 'package:doalink/widgets/auth/onboarding_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 

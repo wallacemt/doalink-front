@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:doalink/widgets/auth_options_select.dart';
+import 'package:doalink/widgets/auth/auth_options_select.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
