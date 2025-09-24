@@ -1,4 +1,4 @@
-import 'package:doalink/screens/app/user_donation_box.dart';
+import 'package:doalink/screens/app/add_donation_box_screen.dart';
 import 'package:doalink/screens/app/user_settings.dart';
 import 'package:doalink/theme/app_colors.dart';
 import 'package:doalink/widgets/maps/map.dart';
@@ -10,7 +10,7 @@ class WrapHomeScreen extends StatelessWidget {
   const WrapHomeScreen({super.key, required this.route});
 
   static List<Map<String, dynamic>> pages = [
-    {"path": "/home", "widget": const UserDonationBox()},
+    {"path": "/home", "widget": const AddDonationBoxScreen()},
     {"path": "/map", "widget": const MapScreen()},
     {"path": "/profile", "widget": const UserSettings()},
   ];
@@ -42,10 +42,17 @@ class WrapHomeScreen extends StatelessWidget {
           },
           items: const [
             Icon(
-              Icons.home_outlined, color: AppColors.cleanCian,
+              Icons.home_outlined,
+              color: AppColors.cleanCian,
             ),
-            Icon(Icons.map_rounded, color: AppColors.cleanCian,),
-            Icon(Icons.person_2_outlined, color: AppColors.cleanCian,)
+            Icon(
+              Icons.map_rounded,
+              color: AppColors.cleanCian,
+            ),
+            Icon(
+              Icons.person_2_outlined,
+              color: AppColors.cleanCian,
+            )
           ]),
       body: pages[currentIndex]["widget"] as Widget,
     );
