@@ -20,14 +20,15 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: "zulu"
+          java-version: "17"
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Static analysis
-        run: flutter analyze
+
+        run: run touch .env && flutter analyze
 
       - name: Run tests
         run: flutter test --coverage
