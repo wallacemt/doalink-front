@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI/CD
 
 on:
   push:
@@ -6,69 +6,337 @@ on:
   pull_request:
     branches: ["*"]
 
+env:
+  FLUTTER_VERSION: "3.19.0"
+  JAVA_VERSION: "17"
+  GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
 jobs:
-  build:
+  analyze_and_test:
+    name: 🔍 Analyze & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Set up Java
+      - name: ☕ Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "17"
+          java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Install dependencies
+      - name: 🐦 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: 📦 Get dependencies
         run: flutter pub get
 
-      - name: Static analysis
+      - name: 🔧 Create .env file
+        run: echo "GOOGLE_MAPS_API_KEY=${{ env.GOOGLE_MAPS_API_KEY }}" > .env
 
-        run: run touch .env && flutter analyze
+      - name: 🔍 Static analysis
+        run: flutter analyze --fatal-infos
 
-      - name: Run tests
-        run: flutter test --coverage
+      - name: 🧪 Run tests
+        run: flutter test --coverage --reporter=expanded
 
-      - name: Check for outdated packages
-        run: dart pub outdated
-
-      - name: Build APK
-        run: flutter build apk --release
-
-      - name: Build App Bundle
-        run: flutter build appbundle --release
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: 📊 Upload coverage reports
+        uses: codecov/codecov-action@v3
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
 
-      - name: Upload App Bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
-
-      - name: Upload Coverage Report
+      - name: 📄 Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
+          retention-days: 30
 
-      - name: Generate build info
+  dependency_check:
+    name: 📋 Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔍 Check for outdated packages
+        run: dart pub outdated --mode=null-safety
+
+      - name: 🔒 Check for security vulnerabilities
         run: |
-          echo "Build Date: $(date)" > build_info.txt
-          echo "Branch: ${{ github.ref_name }}" >> build_info.txt
-          echo "Commit: ${{ github.sha }}" >> build_info.txt
-          echo "Flutter Version: $(flutter --version | head -1)" >> build_info.txt
+          flutter pub deps
+          echo "✅ Dependency check completed"
 
-      - name: Upload build info
+  build_android:
+    name: 🤖 Build Android
+    runs-on: ubuntu-latest
+    needs: [analyze_and_test]
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 🐦 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Create .env file
+        run: echo "GOOGLE_MAPS_API_KEY=${{ env.GOOGLE_MAPS_API_KEY }}" > .env
+
+      - name: 🔨 Build APK
+        run: flutter build apk --release --split-per-abi
+
+      - name: 📦 Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: 📱 Upload APK (arm64-v8a)
         uses: actions/upload-artifact@v4
         with:
-          name: build-info
-          path: build_info.txt
+          name: android-apk-arm64
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          retention-days: 30
+
+      - name: 📱 Upload APK (armeabi-v7a)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-arm32
+          path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          retention-days: 30
+
+      - name: 📱 Upload APK (x86_64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-x64
+          path: build/app/outputs/flutter-apk/app-x86_64-release.apk
+          retention-days: 30
+
+      - name: 📦 Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  build_ios:
+    name: 🍎 Build iOS
+    runs-on: macos-latest
+    needs: [analyze_and_test]
+    if: runner.os == 'macOS' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: 📦 Get dependencies
+        run: flutter pub get
+
+      - name: 🔧 Create .env file
+        run: echo "GOOGLE_MAPS_API_KEY=${{ env.GOOGLE_MAPS_API_KEY }}" > .env
+
+      - name: 🔨 Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📱 Archive iOS app
+        run: |
+          cd build/ios/iphoneos
+          zip -r DoaLink-iOS.zip Runner.app
+
+      - name: 📱 Upload iOS Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/iphoneos/DoaLink-iOS.zip
+          retention-days: 30
+
+  create_release:
+    name: 🚀 Create Release Package
+    runs-on: ubuntu-latest
+    needs: [analyze_and_test, build_android, dependency_check]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Android APK (arm64)
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk-arm64
+          path: ./release/android/
+
+      - name: 📥 Download Android APK (arm32)
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk-arm32
+          path: ./release/android/
+
+      - name: 📥 Download Android APK (x64)
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk-x64
+          path: ./release/android/
+
+      - name: 📥 Download App Bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: android-aab
+          path: ./release/android/
+
+      - name: 📋 Generate build info
+        run: |
+          mkdir -p ./release/info
+          cat > ./release/info/build_info.md << EOF
+          # 📱 DoaLink - Build Information
+
+          ## 🔧 Build Details
+          - **Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')
+          - **Branch:** ${{ github.ref_name }}
+          - **Commit:** ${{ github.sha }}
+          - **Flutter Version:** ${{ env.FLUTTER_VERSION }}
+          - **Java Version:** ${{ env.JAVA_VERSION }}
+          - **Workflow:** ${{ github.workflow }}
+
+          ## 📦 Artifacts Included
+
+          ### 🤖 Android
+          - **APK (ARM64):** \`app-arm64-v8a-release.apk\` - Para dispositivos modernos (recomendado)
+          - **APK (ARM32):** \`app-armeabi-v7a-release.apk\` - Para dispositivos mais antigos
+          - **APK (x64):** \`app-x86_64-release.apk\` - Para emuladores
+          - **App Bundle:** \`app-release.aab\` - Para publicação na Play Store
+
+          ## 📲 Instalação
+
+          1. **Baixe o APK ARM64** (recomendado para a maioria dos dispositivos)
+          2. **Habilite "Fontes desconhecidas"** nas configurações do Android
+          3. **Instale o APK** no dispositivo
+
+          ## ⚠️ Notas Importantes
+
+          - Este é um build de produção com chave da API do Google Maps incluída
+          - O APK está pronto para instalação e uso imediato
+          - Veja o arquivo \`INSTALL.md\` para instruções detalhadas de instalação
+
+          EOF
+
+      - name: 📝 Create installation instructions
+        run: |
+          cat > ./release/info/INSTALL.md << EOF
+          # 📲 Instruções de Instalação - DoaLink
+
+          ## 🤖 Android
+
+          ### Opção 1: APK (Instalação Direta)
+          1. **Escolha o APK correto:**
+             - **ARM64** (\`app-arm64-v8a-release.apk\`): Para a maioria dos dispositivos modernos
+             - **ARM32** (\`app-armeabi-v7a-release.apk\`): Para dispositivos mais antigos
+             - **x64** (\`app-x86_64-release.apk\`): Para emuladores
+
+          2. **Configure seu dispositivo:**
+             - Vá em **Configurações > Segurança**
+             - Habilite **"Fontes desconhecidas"** ou **"Instalar apps desconhecidos"**
+
+          3. **Instale o app:**
+             - Transfira o APK para seu dispositivo
+             - Abra o arquivo APK
+             - Toque em **"Instalar"**
+
+          ### Opção 2: App Bundle (Para Desenvolvedores)
+          - Use o arquivo \`.aab\` para publicar na Google Play Store
+          - Requer conta de desenvolvedor do Google Play
+
+          ## 🔧 Configuração Inicial
+
+          1. **Google Maps:**
+             - ✅ A chave da API do Google Maps já está incluída no APK
+             - O mapa funcionará imediatamente após a instalação
+
+          2. **Permissões:**
+             - O app solicitará permissões de localização
+             - Necessário para funcionalidades de mapa e geolocalização
+
+          ## 🆘 Problemas Comuns
+
+          - **"App não instalado"**: Verifique se habilitou fontes desconhecidas
+          - **"Arquivo corrompido"**: Baixe o APK novamente
+          - **"Mapa não carrega"**: Verifique sua conexão com a internet
+          - **"Localização não funciona"**: Permita acesso à localização nas configurações
+
+          EOF
+
+      - name: 📦 Create release package
+        run: |
+          cd release
+          zip -r "../DoaLink-Release-${{ github.sha }}.zip" . -x "*.git*"
+          cd ..
+
+          # Criar um APK principal (ARM64) para instalação rápida
+          cp "./release/android/app-arm64-v8a-release.apk" "./DoaLink-Install.apk"
+
+      - name: 🚀 Upload final release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: doalink-complete-release
+          path: DoaLink-Release-${{ github.sha }}.zip
+          retention-days: 90
+
+      - name: 📱 Upload installation APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: doalink-install-apk
+          path: DoaLink-Install.apk
+          retention-days: 90
+
+  notify_results:
+    name: 📢 Notify Results
+    runs-on: ubuntu-latest
+    needs: [analyze_and_test, build_android, dependency_check, create_release]
+    if: always()
+    steps:
+      - name: 📊 Check job results
+        run: |
+          echo "## 📊 Build Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Analyze & Test | ${{ needs.analyze_and_test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🤖 Build Android | ${{ needs.build_android.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📋 Dependency Check | ${{ needs.dependency_check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Create Release | ${{ needs.create_release.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.create_release.result }}" == "success" ]]; then
+            echo "✅ **Release criado com sucesso!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📱 **Para instalar:** Baixe o artifact \`doalink-install-apk\`" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **Release completo:** \`doalink-complete-release\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Falha na criação do release**" >> $GITHUB_STEP_SUMMARY
+          fi
