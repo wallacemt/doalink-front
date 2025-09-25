@@ -1,295 +1,313 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:doalink/models/donation_category.dart';
+import 'package:doalink/theme/app_colors.dart';
+import 'package:doalink/utils/donation_category_service.dart';
+import 'package:doalink/widgets/donation_box/category_selection_modal.dart';
+import 'package:doalink/widgets/donation_box/donation_item_widgets.dart';
+import 'package:doalink/widgets/donation_box/empty_donation_box_state.dart';
 import 'package:flutter/material.dart';
 
 class AddDonationBoxScreen extends StatefulWidget {
   const AddDonationBoxScreen({super.key});
 
   @override
-  State<AddDonationBoxScreen> createState() => _AddDonationBoxScreen();
+  State<AddDonationBoxScreen> createState() => _AddDonationBoxScreenState();
 }
 
-class _AddDonationBoxScreen extends State<AddDonationBoxScreen> {
-  // -------------- MODAL PRE-RENDERIZADO ---------------------
-  // Carregar Widget do Modal
-  Widget _buildCategorySelectionModal(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.5,
-      maxChildSize: 0.8,
-      builder: (_, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              // Handle para o usuário arrastar o modal
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Container(
-                  height: 5.0,
-                  width: 40.0,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GridView.count(
-                  controller: scrollController,
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 20,
-                  padding: const EdgeInsets.all(2),
-                  children: [
-                    _buildCategoryItem(context, 'Camisas', Icons.checkroom),
-                    _buildCategoryItem(context, 'Calça', Icons.checkroom),
-                    _buildCategoryItem(context, 'Camisetas', Icons.checkroom),
-                    _buildCategoryItem(context, 'Calça', Icons.checkroom),
-                    _buildCategoryItem(context, 'Shorts', Icons.checkroom),
-                    _buildCategoryItem(context, 'Casaco', Icons.checkroom),
-                    _buildCategoryItem(context, 'Vestido', Icons.checkroom),
-                    _buildCategoryItem(context, 'Acessórios', Icons.checkroom),
-                    // TODO: IMPLEMENTAR A LÓGICA DO CUSTOMIZAR
-                    // _buildCategoryItem(context, 'Custom', Icons.add),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+class _AddDonationBoxScreenState extends State<AddDonationBoxScreen>
+    with TickerProviderStateMixin {
+  bool _isEditMode = false;
+  List<DonationItem> _donationItems = [];
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabScaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMockData();
+    _initializeAnimations();
   }
 
-  // Item individual
-  Widget _buildCategoryItem(BuildContext context, String title, IconData icon) {
-    return InkWell(
-      onTap: () {
-        // Retorna o título e a quantidade base da categoria para a tela anterior
-        Navigator.pop(context, {'category': title, 'quantity': 1});
-      },
-      child: Column(
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.orange.withOpacity(0.1),
-            radius: 30,
-            child: Icon(icon, color: Colors.orange, size: 40),
-          ),
-          // const SizedBox(height: 8),
-          Text(title),
-        ],
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
+  void _initializeAnimations() {
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fabScaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
+  void _loadMockData() {
+    // Carrega dados mock para demonstração
+    setState(() {
+      _donationItems = DonationCategoryService.getMockDonationItems();
+    });
+  }
+
+  void _toggleEditMode() {
+    setState(() {
+      _isEditMode = !_isEditMode;
+    });
+  }
+
+  void _addNewItem() async {
+    _fabAnimationController.forward().then((_) {
+      _fabAnimationController.reverse();
+    });
+
+    final selectedItem = await showModalBottomSheet<DonationItem>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const CategorySelectionModal(),
+    );
+
+    if (selectedItem != null && mounted) {
+      setState(() {
+        _donationItems.add(selectedItem);
+        if (!_isEditMode && _donationItems.length == 1) {
+          _isEditMode = true;
+        }
+      });
+    }
+  }
+
+  void _removeItem(int index) {
+    setState(() {
+      _donationItems.removeAt(index);
+    });
+
+    // Sair do modo de edição se não houver mais itens
+    if (_donationItems.isEmpty) {
+      setState(() {
+        _isEditMode = false;
+      });
+    }
+  }
+
+  void _updateItemQuantity(int index, int newQuantity) {
+    if (newQuantity > 0) {
+      setState(() {
+        _donationItems[index].quantity = newQuantity;
+      });
+    }
+  }
+
+  void _saveDonationBox() {
+    // TODO: Implementar salvamento da caixa de doação
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${_donationItems.length} itens salvos na sua caixa de doação!',
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: AppColors.green_500,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
+
+    setState(() {
+      _isEditMode = false;
+    });
   }
-  // -------------- MODAL PRE-RENDERIZADO ---------------------
-
-  bool _isSalvar = false;
-  // -------------- lISTA MOCKADOS TESTE BASE ----------------------
-  List<Map<String, dynamic>> itensDoacao = [
-    {'category': 'Jeans', 'quantity': 1},
-    {'category': 'Shorts', 'quantity': 1},
-    {'category': 'Jeans', 'quantity': 1},
-  ];
-
-  // -------------- lISTA MOCKADOS TESTE ----------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Caixa de Doações',
-          style: TextStyle(fontFamily: 'Subtitles'),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          // Botão para confirmar
-          TextButton(
-            onPressed: () async {
-              // TODO: Implementar a lógica de confirmação e envio dos dados ao DB
+      backgroundColor: AppColors.cleanCian,
+      appBar: _buildAppBar(),
+      body: _donationItems.isEmpty
+          ? EmptyDonationBoxState(onAddFirstItem: _addNewItem)
+          : _buildDonationItemsList(),
+      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
 
-              // TODO: Não aparecer as opções de regular quantidade do item após salvar
-              setState(() {
-                _isSalvar = true;
-              });
-            },
-            child: const Text(
-              'Salvar',
-              style: TextStyle(color: Colors.black),
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        onPressed: () => Navigator.of(context).pushNamed('/home'),
+        icon: const Icon(
+          Icons.arrow_back,
+          color: AppColors.black,
+        ),
+      ),
+      title: FadeInDown(
+        duration: const Duration(milliseconds: 600),
+        child: const Text(
+          'Caixa de Doações',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
+          ),
+        ),
+      ),
+      actions: [
+        if (_donationItems.isNotEmpty) ...[
+          FadeInDown(
+            duration: const Duration(milliseconds: 600),
+            delay: const Duration(milliseconds: 100),
+            child: IconButton(
+              onPressed: _toggleEditMode,
+              icon: Icon(
+                _isEditMode ? Icons.done : Icons.edit,
+                color: _isEditMode ? AppColors.green_500 : AppColors.orange_500,
+              ),
+              tooltip: _isEditMode ? 'Concluir edição' : 'Editar itens',
             ),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 27.0, vertical: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: Center(
-                      child: Text(
-                        'Categoria',
-                        style: TextStyle(
-                          fontFamily: 'Subtitles',
-                          fontSize: 17.5,
-                        ),
-                      ),
-                    )),
-                Spacer(
-                  flex: 1,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    'Quantidade',
-                    style: TextStyle(
-                      fontFamily: 'Subtitles',
-                      fontSize: 17.5,
-                    ),
+          if (_isEditMode) ...[
+            FadeInDown(
+              duration: const Duration(milliseconds: 600),
+              delay: const Duration(milliseconds: 200),
+              child: TextButton(
+                onPressed: _saveDonationBox,
+                child:const Text(
+                  'Salvar',
+                  style: TextStyle(
+                    color: AppColors.green_500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: itensDoacao.isEmpty
-                ? const Center(
-                    // TODO: Caso remova todos os itens
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _buildDonationItemsList() {
+    return Column(
+      children: [
+        // Header da lista
+        if (!_isEditMode) ...[
+          FadeInDown(
+            duration: const Duration(milliseconds: 600),
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.inventory_2,
+                    color: AppColors.orange_500,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Ícone de caixa vazia
-                        Icon(
-                          Icons.inventory_2_outlined, // TODO: Ícone TEMPORÁRIO
-                          size: 100,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'Esta é sua caixa de doações',
-                          style: TextStyle(fontSize: 16),
+                        const Text(
+                          'Sua caixa de doação',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.black,
+                          ),
                         ),
                         Text(
-                          'Adicione itens que você quer doar',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          '${_donationItems.length} ${_donationItems.length == 1 ? 'item' : 'itens'} adicionados',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.medianCian,
+                          ),
                         ),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    // TODO: Mostrar itens da LISTA MOCKADA
-                    itemCount: itensDoacao.length,
-                    itemBuilder: (context, index) {
-                      final item = itensDoacao[index];
-                      return ListTile(
-                        leading: _isSalvar
-                            ? null
-                            : IconButton(
-                                icon: const Icon(Icons.close,
-                                    color: Colors.black),
-                                onPressed: () {
-                                  // TODO: Botão para remover o item da lista
-                                  setState(() {
-                                    itensDoacao.removeAt(index);
-                                  });
-                                },
-                              ),
-                        title: Text(item['category']),
-                        trailing: _isSalvar
-                            ?
-                            // TODO: Se _isSalvar for verdade, mostra apenas a quantidade
-                            Text(
-                                '${item['quantity']}',
-                                style: const TextStyle(fontSize: 18.5),
-                              )
-                            : SizedBox(
-                                // TODO: Caso o contrário, mostra os botões de ajuste da quantidade
-                                width: 125,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove),
-                                      onPressed: () {
-                                        // TODO: Diminuir a quantidade do item
-                                        setState(() {
-                                          if (item['quantity'] > 1) {
-                                            item['quantity']--;
-                                          }
-                                        });
-                                      },
-                                    ),
-                                    Text(
-                                      '${item['quantity']}',
-                                      style: const TextStyle(fontSize: 18.5),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {
-                                        // TODO: Aumentar a quantidade do item
-                                        setState(() {
-                                          item['quantity']++;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      );
-                    },
                   ),
-          ),
-
-          // TODO: Botão principal para adicionar mais itens
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF9BA4D), // A cor que você quer
-                foregroundColor: Colors.black,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 68, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                elevation: 4,
-              ),
-              onPressed: () async {
-                // TODO: Espera o resultado da categoria selecionada no modal
-                final selectedItem = await showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (BuildContext context) {
-                    return _buildCategorySelectionModal(context);
-                  },
-                );
-                // TODO: Se um item do modal for selecionado, ele será adicionado à lista
-                if (selectedItem != null) {
-                  setState(() {
-                    itensDoacao.add(selectedItem);
-                  });
-                }
-                // TODO: Se clicar em adicionar item, mostra os objetos: Remover, Aumentar e Diminuir quantidade dos itens
-                setState(() {
-                  _isSalvar = false;
-                });
-              },
-              child: const Text(
-                'ADICIONAR NA CAIXA',
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.green_500.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Pronto para doar',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.green_500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
+
+        // Lista de itens
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: _donationItems.length,
+            itemBuilder: (context, index) {
+              final item = _donationItems[index];
+              return DonationItemCard(
+                item: item,
+                isEditMode: _isEditMode,
+                animationDelay: index,
+                onRemove: () => _removeItem(index),
+                onQuantityChanged: (newQuantity) =>
+                    _updateItemQuantity(index, newQuantity),
+              );
+            },
+          ),
+        ),
+        const SizedBox(
+          height: 60,
+        )
+      ],
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    if (_donationItems.isEmpty) return const SizedBox.shrink();
+    if (_isEditMode) return const SizedBox.shrink();
+    return ScaleTransition(
+      scale: _fabScaleAnimation,
+      child: FloatingActionButton.small(
+        onPressed: _addNewItem,
+        backgroundColor: AppColors.orange_500,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(
+          Icons.add,
+          size: 28,
+        ),
       ),
     );
   }
